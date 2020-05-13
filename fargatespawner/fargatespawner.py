@@ -133,6 +133,8 @@ class FargateSpawner(Spawner):
     task_definition_arn = Unicode(config=True)
     task_security_groups = List(trait=Unicode, config=True)
     task_subnets = List(trait=Unicode, config=True)
+    task_assign_public_ip = Unicode(config=True)
+    task_platform_version = Unicode(config=True)
     notebook_port = Int(config=True)
     notebook_scheme = Unicode(config=True)
     notebook_args = List(trait=Unicode, config=True)
@@ -198,6 +200,7 @@ class FargateSpawner(Spawner):
                 self.task_role_arn,
                 self.task_cluster_name, self.task_container_name, self.task_definition_arn,
                 self.task_security_groups, self.task_subnets,
+                self.task_assign_public_ip, self.task_platform_version,
                 self.cmd + args, self.get_env())
             task_arn = run_response['tasks'][0]['taskArn']
             self.progress_buffer.write({'progress': 1})
@@ -319,6 +322,7 @@ async def _describe_task(logger, aws_endpoint, task_cluster_name, task_arn):
 async def _run_task(logger, aws_endpoint,
                     task_role_arn,
                     task_cluster_name, task_container_name, task_definition_arn, task_security_groups, task_subnets,
+                    task_assign_public_ip, task_platform_version,
                     task_command_and_args, task_env):
     return await _make_ecs_request(logger, aws_endpoint, 'RunTask', {
         'cluster': task_cluster_name,
@@ -340,11 +344,12 @@ async def _run_task(logger, aws_endpoint,
         'launchType': 'FARGATE',
         'networkConfiguration': {
             'awsvpcConfiguration': {
-                'assignPublicIp': 'DISABLED',
+                'assignPublicIp': task_assign_public_ip,
                 'securityGroups': task_security_groups,
                 'subnets': task_subnets,
             },
         },
+        'platformVersion': task_platform_version
     })
 
 

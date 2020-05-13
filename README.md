@@ -28,7 +28,9 @@ You _must_ also set the following settings on `c.FargateSpawner` in your `jupyte
 | `task_container_name` | The name of the container in the task definition. | `'jupyerhub-notebook'` |
 | `task_definition_arn` | The family and revision (family:revision) or full ARN of the task definition that runs the notebooks. Typically, this task definition would specify a docker image that builds on one of those from https://github.com/jupyter/docker-stacks. | `'jupyterhub-notebook:7'` |
 | `task_security_groups` | The security group(s) associated with the Fargate tasks. These must allow communication to and from the hub/proxy. More information, such as the ports used, is at https://jupyterhub.readthedocs.io/en/stable/getting-started/networking-basics.html. | `['sg-00026fc201a4e374b']` |
-| `task_subnets` | The subnets associated with the Fargate tasks. | `['subnet-01fc5f15ac710c012']` } |
+| `task_subnets` | The subnets associated with the Fargate tasks. | `['subnet-01fc5f15ac710c012']` |
+| `task_assign_public_ip` | Whether the task's elastic network interface receives a public IP address. | `DISABLED` |
+| `task_platform_version` | The platform version the task should run. | `LATEST` |
 | `notebook_port` | The port the notebook servers listen on. | `8888` |
 | `notebook_scheme` | The scheme used by the hub and proxy to connect to the notebook servers. At the time of writing `'https'` will not work out of the box. However, users do not connect to the the notebook server directly, and does not, typically, allow incoming connections from the public internet. Instead, users connect to the proxy, which can be configured to listen on HTTPS independently of this setting. There is more information on setting up HTTPS for connections to the proxy at https://jupyterhub.readthedocs.io/en/stable/getting-started/security-basics.html. | `'http'` |
 | `notebook_args` | Additional arguments to be passed to `jupyterhub-singleuser` that starts each notebook server. This can be the empty list. | `['--config=notebook_config.py']` |
