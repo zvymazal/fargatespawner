@@ -335,7 +335,7 @@ async def _run_task(logger, aws_endpoint,
                     {
                         'name': name,
                         'value': value,
-                    } for name, value in task_env.items()
+                    } for name, value in task_env.items() if name.startswith('JUPYTERHUB') or name.startswith('JPY')
                 ],
                 'name': task_container_name,
             }],
