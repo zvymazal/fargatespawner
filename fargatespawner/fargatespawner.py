@@ -28,6 +28,7 @@ from traitlets.config.configurable import (
 from traitlets import (
     Bool,
     Dict,
+    Enum,
     Instance,
     Int,
     List,
@@ -104,8 +105,8 @@ class FargateSpawner(Spawner):
     task_definition_arn = Unicode(config=True)
     task_security_groups = List(trait=Unicode, config=True)
     task_subnets = List(trait=Unicode, config=True)
-    task_assign_public_ip = Unicode(config=True)
-    task_platform_version = Unicode(config=True)
+    task_assign_public_ip = Enum(["DISABLED", "ENABLED"], "DISABLED", config=True)
+    task_platform_version = Unicode("LATEST", config=True)
     notebook_port = Int(config=True)
     notebook_scheme = Unicode(config=True)
     notebook_args = List(trait=Unicode, config=True)
