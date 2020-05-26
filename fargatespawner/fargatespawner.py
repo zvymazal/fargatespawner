@@ -202,7 +202,7 @@ class FargateSpawner(Spawner):
                 self.task_cluster_name, self.task_container_name, self.task_definition_arn,
                 self.task_security_groups, self.task_subnets,
                 self.task_assign_public_ip, self.task_platform_version,
-                self.cmd + args, self.get_env())
+                self.cmd + args, self.get_env(), self.user_options)
             task_arn = run_response['tasks'][0]['taskArn']
             self.progress_buffer.write({'progress': 1})
         finally:
@@ -324,8 +324,8 @@ async def _run_task(logger, aws_endpoint,
                     task_role_arn,
                     task_cluster_name, task_container_name, task_definition_arn, task_security_groups, task_subnets,
                     task_assign_public_ip, task_platform_version,
-                    task_command_and_args, task_env):
-    return await _make_ecs_request(logger, aws_endpoint, 'RunTask', {
+                    task_command_and_args, task_env, task_overrides):
+    data = {
         'cluster': task_cluster_name,
         'taskDefinition': task_definition_arn,
         'overrides': {
@@ -351,7 +351,10 @@ async def _run_task(logger, aws_endpoint,
             },
         },
         'platformVersion': task_platform_version
-    })
+    }
+    for name, value in task_overrides.items():
+        data['overrides'][name] = value
+    return await _make_ecs_request(logger, aws_endpoint, 'RunTask', data)
 
 
 async def _make_ecs_request(logger, aws_endpoint, target, dict_data):
