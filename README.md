@@ -70,6 +70,35 @@ from fargatespawner import FargateSpawnerEC2InstanceProfileAuthentication
 c.FargateSpawner.authentication_class = FargateSpawnerEC2InstanceProfileAuthentication
 ```
 
+It's possible to override Task Definition based on the user input using [spawner options form](https://jupyterhub.readthedocs.io/en/stable/reference/spawners.html#spawner-options-form). This feature can be for example used to customize resources allocated to the task as you can see in the example `jupyterhub_config.py` below.
+
+```
+from fargatespawner import FargateSpawner
+
+class CustomFargateSpawner(FargateSpawner):
+    def _options_form_default(self):
+        return """
+        <div class="form-group">
+            <label for="resources">Choose suitable configuration for Notebook instance</label>
+            <select name="resources" size="4" class="form-control">
+              <option value="512_1024" selected>0.5 CPU & 1GB RAM</option>
+              <option value="1024_4096">1 CPU & 4GB RAM</option>
+              <option value="2048_16384">2 CPU & 16GB RAM</option>
+              <option value="4096_30720">4 CPU & 30GB RAM</option>
+            </select>
+        </div>
+        """
+
+    def options_from_form(self, formdata):
+        options = {}
+        if formdata['resources']:
+            options['cpu'] = formdata['resources'][0].split("_")[0]
+            options['memory'] = formdata['resources'][0].split("_")[1]
+        return options
+
+
+c.JupyterHub.spawner_class = CustomFargateSpawner
+```
 
 ## Run-time dependencies
 
